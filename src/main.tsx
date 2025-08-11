@@ -7,13 +7,14 @@ import {
 
 import './index.css'
 import App from './App.tsx'
+import { BackLog } from './pages/BackLog.tsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { index: true, Component: () => <div>Home</div> },
+      { index: true, Component: BackLog },
       {
         path: "/sprint",
         element: <div>sprint</div>,

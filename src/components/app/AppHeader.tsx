@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button"
 import { SidebarTrigger } from "@/components/ui/sidebar"
-import { IconPlus } from "@tabler/icons-react"
+import { IconFilter, IconPlus } from "@tabler/icons-react"
 import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 export function AppHeader() {
     return (
@@ -35,7 +42,35 @@ export function AppHeader() {
                 </div>
 
                 <div className="flex gap-4 items-center">
-                    <Input placeholder="Search user stories..." />
+                    <div className="relative flex-1 max-w-sm">
+                        <Input placeholder="Search user stories..." />
+                    </div>
+
+                    <Select>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Theme" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="light">Light</SelectItem>
+                            <SelectItem value="dark">Dark</SelectItem>
+                            <SelectItem value="system">System</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Select>
+                        <SelectTrigger className="w-[180px]">
+                            <SelectValue placeholder="Theme" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="light">Light</SelectItem>
+                            <SelectItem value="dark">Dark</SelectItem>
+                            <SelectItem value="system">System</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    <Button variant="outline">
+                        <IconFilter />
+                    </Button>
                 </div>
             </div>
         </header>
