@@ -2,8 +2,12 @@ import { createContext, useReducer, type ActionDispatch } from "react";
 
 export const BackLogStateContext = createContext<{
     searchQuery: string;
+    priority: string;
+    assignee: string;
 }>({
     searchQuery: "",
+    priority: "all",
+    assignee: "all",
 });
 
 export const BackLogDispatchContext = createContext<
@@ -19,7 +23,10 @@ function filterReducer(state: any, action: { type: string; payload: any }) {
     switch (action.type) {
         case "SET_SEARCH_QUERY":
             return { ...state, searchQuery: action.payload };
-        // Add more cases for other actions if needed
+        case "SET_PRIORITY":
+            return { ...state, priority: action.payload };
+        case "SET_ASSIGNEE":
+            return { ...state, assignee: action.payload };
         default:
             return state;
     }
@@ -28,6 +35,8 @@ function filterReducer(state: any, action: { type: string; payload: any }) {
 export function BackLogContextProvider({ children }: { children: React.ReactNode }) {
     const [filterState, filterDispatch] = useReducer(filterReducer, {
         searchQuery: "",
+        priority: "all",
+        assignee: "all",
     });
 
     return (

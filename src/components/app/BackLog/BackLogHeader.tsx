@@ -55,7 +55,10 @@ export function BackLogHeader() {
                         })} />
                     </div>
 
-                    <Select>
+                    <Select defaultValue="all" onValueChange={(value) => filterDispatchContext({
+                        type: 'SET_PRIORITY',
+                        payload: value
+                    })}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Theme" />
                         </SelectTrigger>
@@ -68,7 +71,10 @@ export function BackLogHeader() {
                         </SelectContent>
                     </Select>
 
-                    <Select>
+                    <Select defaultValue="all" onValueChange={(value) => filterDispatchContext({
+                        type: 'SET_ASSIGNEE',
+                        payload: value
+                    })}>
                         <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Theme" />
                         </SelectTrigger>
