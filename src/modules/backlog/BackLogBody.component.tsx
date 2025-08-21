@@ -1,14 +1,12 @@
-import { SprintCollapsible } from "@/components/app/BackLog/SprintCollapsible";
-import { StoryCollapsible } from "@/components/app/BackLog/StoryCollapsible";
-import { BackLogTask } from "@/components/app/BackLog/BackLogTask";
-import { BackLogDispatchContext, BackLogStateContext } from "./BackLogContextProvider";
+import { SprintCollapsible } from "@/modules/backlog/SprintCollapsible.component";
+import { StoryCollapsible } from "@/modules/backlog/StoryCollapsible.component";
+import { BackLogTask } from "@/modules/backlog/BackLogTask.component";
 import { useContext } from "react";
 import $api from "@/shared/api.shared";
+import { BackLogDispatchContext, BackLogStateContext } from "./backlog-context";
 
 export function BackLogBody() {
-    const {
-        sprints
-    } = useContext(BackLogStateContext);
+    const { sprints } = useContext(BackLogStateContext);
     const dispatch = useContext(BackLogDispatchContext);
 
     async function handleDeleteSprint(sprintId: string) {

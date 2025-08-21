@@ -1,4 +1,4 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios';
+import axios, { type AxiosRequestConfig } from 'axios';
 export class FetchFactory {
     private instance
     constructor(baseUrl: string, timeout?: number) {

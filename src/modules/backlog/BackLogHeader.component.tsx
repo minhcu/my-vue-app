@@ -10,7 +10,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { useCallback, useContext, useState } from "react"
-import { BackLogDispatchContext } from "./BackLogContextProvider"
+
 import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -18,6 +18,7 @@ import { z } from "zod"
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
 import $api from "@/shared/api.shared"
 import { DialogTitle } from "@radix-ui/react-dialog"
+import { BackLogDispatchContext } from "./backlog-context"
 
 const sprintFormSchema = z.object({
     name: z.string().min(1, "Sprint name is required"),
