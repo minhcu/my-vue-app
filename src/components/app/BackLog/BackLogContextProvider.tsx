@@ -1,6 +1,16 @@
 import $api, { type Sprint } from "@/shared/api.shared";
 import { createContext, useEffect, useReducer, type ActionDispatch, type ContextType } from "react";
 
+export const SprintStateContext = createContext<{
+    sprints: Sprint[];
+}>({
+    sprints: [],
+});
+
+export const SprintDispatchContext = createContext<ActionDispatch<[action: { type: string; payload: any; }]>>(
+    () => { },
+);
+
 export const BackLogStateContext = createContext<{
     sprintsData: Sprint[];
     sprints: Sprint[];

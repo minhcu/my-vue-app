@@ -4,20 +4,20 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { IconBook, IconCalendar, IconChevronDown, IconChevronRight, IconDots } from "@tabler/icons-react"
+import { IconBook, IconCalendar, IconChevronDown, IconChevronRight, IconDots, IconEdit, IconTrash } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import type { Sprint } from "@/shared/api.shared"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import { DropdownMenuLabel } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function SprintCollapsible({
     children,
     sprint,
+    onDelete,
 }: {
     children?: React.ReactNode,
     sprint: Sprint
+    onDelete: (id: string) => void
 }) {
-
     return (
         <Collapsible>
             <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
@@ -57,12 +57,15 @@ export function SprintCollapsible({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
                             <DropdownMenuGroup>
                                 <DropdownMenuItem>
+                                    <IconEdit className="mr-2" />
                                     Edit Sprint
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem className="text-red-500" onClick={() => {
+                                    onDelete(sprint.id)
+                                }}>
+                                    <IconTrash className="mr-2 text-inherit" />
                                     Delete Sprint
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
