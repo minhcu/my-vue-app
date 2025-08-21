@@ -9,14 +9,116 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useContext } from "react"
+import { useCallback, useContext, useState } from "react"
 import { BackLogDispatchContext } from "./BackLogContextProvider"
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "@/components/ui/dialog"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
+import $api from "@/shared/api.shared"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
+const sprintFormSchema = z.object({
+    name: z.string().min(1, "Sprint name is required"),
+    goal: z.string().optional(),
+    startDate: z.string(),
+    endDate: z.string(),
+});
+
+const SprintFormDiaLog = ({ onSuccess }: {
+    onSuccess: () => void;
+}) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const form = useForm<z.infer<typeof sprintFormSchema>>({
+        resolver: zodResolver(sprintFormSchema),
+        defaultValues: {
+            name: "",
+            goal: "",
+            startDate: '',
+            endDate: '',
+        },
+    })
+
+    const onSubmit = useCallback(async (formData: z.infer<typeof sprintFormSchema>) => {
+        await $api.sprint.createSprint(formData)
+        form.reset()
+        setIsOpen(false)
+        onSuccess()
+    }, [])
+
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="mt-2">
+                    <IconPlus />
+                    <span className="text-sm">Create sprint</span>
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Create New Sprint</DialogTitle>
+                </DialogHeader>
+                <Form {...form}>
+                    <form>
+                        <FormField control={form.control} name="name" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Sprint Name</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Enter sprint name" {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )} />
+
+                        <FormField control={form.control} name="goal" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Sprint Goal</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Enter sprint goal" {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )} />
+
+                        <FormField control={form.control} name="startDate" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Start Date</FormLabel>
+                                <FormControl>
+                                    <Input type="date" {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )} />
+
+                        <FormField control={form.control} name="endDate" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>End Date</FormLabel>
+                                <FormControl>
+                                    <Input type="date" {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )} />
+                    </form>
+                </Form>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline">
+                            Close
+                        </Button>
+                    </DialogClose>
+                    <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+                        Create Sprint
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    )
+}
 
 export function BackLogHeader() {
     const filterDispatchContext = useContext(BackLogDispatchContext);
-    console.log("header render only once")
-
+    const fetchSprints = useCallback(async () => {
+        const sprints = await $api.sprint.getSprints()
+        filterDispatchContext({ type: 'SET_SPRINTS', payload: sprints });
+    }, [])
     return (
         <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
             <div className="w-full p-6 border-b bg-background">
@@ -30,27 +132,31 @@ export function BackLogHeader() {
                     </div>
 
                     <div className="flex gap-2">
-                        <Button variant="outline" className="mt-2">
-                            <IconPlus />
-                            <span className="text-sm">Create sprint</span>
-                        </Button>
+                        <SprintFormDiaLog onSuccess={fetchSprints} />
 
                         <Button variant="outline" className="mt-2 ml-2">
                             <IconPlus />
                             <span className="text-sm">Add task</span>
                         </Button>
 
-                        <Button color="primary" className="mt-2 ml-2">
-                            <IconPlus />
-                            <span className="text-sm">Add user story</span>
-                        </Button>
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button color="primary" className="mt-2 ml-2">
+                                    <IconPlus />
+                                    <span className="text-sm">Add user story</span>
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                test
+                            </DialogContent>
+                        </Dialog>
                     </div>
                 </div>
 
                 <div className="flex gap-4 items-center">
                     <div className="relative flex-1 max-w-sm">
                         <Input placeholder="Search user stories..." onChange={(e) => filterDispatchContext({
-                            type: 'SET_SEARCH_QUERY', 
+                            type: 'SET_SEARCH_QUERY',
                             payload: e.target.value
                         })} />
                     </div>

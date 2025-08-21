@@ -6,10 +6,17 @@ import {
 } from "@/components/ui/collapsible"
 import { IconBook, IconCalendar, IconChevronDown, IconChevronRight, IconDots } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
+import type { Sprint } from "@/shared/api.shared"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
+import { DropdownMenuLabel } from "@/components/ui/dropdown-menu"
 
 export function SprintCollapsible({
     children,
-}: { children?: React.ReactNode }) {
+    sprint,
+}: {
+    children?: React.ReactNode,
+    sprint: Sprint
+}) {
 
     return (
         <Collapsible>
@@ -24,12 +31,12 @@ export function SprintCollapsible({
 
                     <div>
                         <div className="flex items-center gap-2">
-                            <h3 className="font-semibold">Sprint 1 - Authentication & Dashboard</h3>
-                            <Badge variant="default">Badge</Badge>
+                            <h3 className="font-semibold">{sprint.name}</h3>
+                            <Badge variant="default">{sprint.status || 'planning'}</Badge>
                         </div>
                         <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
                             <div className="flex items-center gap-1">
-                                <IconCalendar className="h-3 w-3" /> 2/1/2024 - 2/1/2024
+                                <IconCalendar className="h-3 w-3" /> {sprint.startDate} - {sprint.endDate}
                             </div>
                             <div className="flex items-center gap-1">
                                 <IconBook className="h-3 w-3" /> 5 stories
@@ -43,9 +50,24 @@ export function SprintCollapsible({
                         <IconChevronRight />
                         Start Sprint
                     </Button>
-                    <Button variant="ghost">
-                        <IconDots className="h-4 w-4" />
-                    </Button>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost">
+                                <IconDots className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem>
+                                    Edit Sprint
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    Delete Sprint
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
             <CollapsibleContent>

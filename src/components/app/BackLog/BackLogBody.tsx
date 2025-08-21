@@ -6,30 +6,18 @@ import { useContext } from "react";
 
 export function BackLogBody() {
     const {
-        searchQuery, // This can be used for filtering tasks if needed
+        sprints
     } = useContext(BackLogStateContext);
-
-    console.log("BackLogBody re-render when searchQuery changes:", searchQuery);
 
     return (
         <div className="flex-1 overflow-auto p-6 space-y-6">
-            <SprintCollapsible>
-                <StoryCollapsible>
-                    <BackLogTask />
-                </StoryCollapsible>
-            </SprintCollapsible>
-
-            <SprintCollapsible>
-                <StoryCollapsible>
-                    <BackLogTask />
-                </StoryCollapsible>
-            </SprintCollapsible>
-
-            <SprintCollapsible>
-                <StoryCollapsible>
-                    <BackLogTask />
-                </StoryCollapsible>
-            </SprintCollapsible>
+            {sprints.map((sprint) => (
+                <SprintCollapsible key={sprint.id} sprint={sprint}>
+                    <StoryCollapsible>
+                        <BackLogTask />
+                    </StoryCollapsible>
+                </SprintCollapsible>
+            ))}
         </div>
     )
 }
