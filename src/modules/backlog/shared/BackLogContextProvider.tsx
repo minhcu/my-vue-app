@@ -1,5 +1,5 @@
 import $api, { type Sprint } from "@/shared/api.shared";
-import {useEffect, useReducer, type ContextType } from "react";
+import { useEffect, useReducer, type ContextType } from "react";
 import { BackLogDispatchContext, BackLogStateContext } from "./backlog-context";
 
 function filterReducer(state: ContextType<typeof BackLogStateContext>, action: { type: string; payload: any }) {
@@ -33,9 +33,10 @@ export function BackLogContextProvider({ children }: { children: React.ReactNode
     });
 
     useEffect(() => {
-        $api.sprint.getSprints().then((sprints) => {
-            filterDispatch({ type: 'SET_SPRINTS', payload: sprints });
-        });
+        Promise.all([$api.userStory.getStories(), $api.sprint.getSprints()])
+            .then(([stories, sprints]) => {
+                filterDispatch({ type: 'SET_SPRINTS', payload: sprints });
+            });
     }, []);
 
     return (

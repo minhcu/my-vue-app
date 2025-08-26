@@ -1,9 +1,10 @@
-import { SprintCollapsible } from "@/modules/backlog/SprintCollapsible.component";
-import { StoryCollapsible } from "@/modules/backlog/StoryCollapsible.component";
-import { BackLogTask } from "@/modules/backlog/BackLogTask.component";
 import { useContext } from "react";
 import $api from "@/shared/api.shared";
-import { BackLogDispatchContext, BackLogStateContext } from "./backlog-context";
+
+import { BackLogDispatchContext, BackLogStateContext } from "../shared/backlog-context";
+import { SprintCollapsible } from "./SprintCollapsible";
+import { StoryCollapsible } from "./StoryCollapsible";
+import { BackLogTask } from "./BackLogTask";
 
 export function BackLogBody() {
     const { sprints } = useContext(BackLogStateContext);

@@ -4,13 +4,14 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { IconBook, IconChevronRight, IconCurling, IconDots, IconDotsVertical } from "@tabler/icons-react"
+import { IconBook, IconChevronRight, IconCurling, IconDots, IconDotsVertical, IconEdit, IconTrash } from "@tabler/icons-react"
 import { Badge } from "@/components/ui/badge"
 import {
     Card,
     CardContent,
     CardHeader,
 } from "@/components/ui/card"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 export function StoryCollapsible({
     children,
@@ -48,9 +49,27 @@ export function StoryCollapsible({
                                     <IconChevronRight className="h-4 w-4" />
                                 </Button>
                             </CollapsibleTrigger>
-                            <Button className="h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer" variant="ghost">
-                                <IconDots className="h-4 w-4" />
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost">
+                                        <IconDots className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuGroup>
+                                        <DropdownMenuItem>
+                                            <IconEdit className="mr-2" />
+                                            Edit Story
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem className="text-red-500" onClick={() => {
+                                            // onDelete(story.id)
+                                        }}>
+                                            <IconTrash className="mr-2 text-inherit" />
+                                            Delete Story
+                                        </DropdownMenuItem>
+                                    </DropdownMenuGroup>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     </div>
                 </CardHeader>

@@ -7,7 +7,7 @@ import {
 
 import './index.css'
 import App from './App.tsx'
-import { BackLog } from '@/modules/backlog/BackLog.page.tsx';
+import { BackLog } from '@/modules/backlog/BackLogPage.tsx';
 
 const router = createBrowserRouter([
   {

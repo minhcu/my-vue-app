@@ -24,15 +24,15 @@ export interface SprintFormData {
 
 const $api = {
     app: {
-        healthCheck: async () => {
+        healthCheck: async (): Promise<string> => {
             const response = await API_SERVICE.get(API_ENDPOINT.app.healthCheck);
 
-            return response;
+            return response.data;
         },
         status: async () => {
             const response = await API_SERVICE.get(API_ENDPOINT.app.status);
 
-            return response;
+            return response.data;
         },
     },
     auth: {
@@ -58,7 +58,7 @@ const $api = {
         getStories: async () => {
             const response = await API_SERVICE.get(API_ENDPOINT.userStory.list);
 
-            return response
+            return response.data
         },
         createStory: async (data: any) => {
             const response = await API_SERVICE.post(API_ENDPOINT.userStory.create, data);
