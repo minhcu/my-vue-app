@@ -21,14 +21,17 @@ export const taskFormSchema = z.object({
     tags: z.array(z.string()),
 });
 
+export const sprintPriority = [
+    'd31ca8c4-3536-4ed2-81da-6e4ab4294cd1',
+    'fc1f04a8-2f30-4fbf-9d69-c3b74370bc02',
+    'd31ca8c4-3536-4ed2-81da-6e4ab4294cd1'
+]
+
 export const storyFormSchema = z.object({
     title: z.string().min(1, "Story title is required"),
     description: z.string().min(1, "Story description is required"),
     acceptanceCriteria: z.string().optional(),
-    priorityId: z.enum(["low", "medium", "high", "critical"]).refine(
-        (val) => ["low", "medium", "high", "critical"].includes(val),
-        { message: "Invalid priority" }
-    ),
+    priorityId: z.enum(sprintPriority),
     point: z.number().refine(
         (val) => [1, 2, 3, 5, 8, 13, 21].includes(val),
         { message: "Invalid story points" }

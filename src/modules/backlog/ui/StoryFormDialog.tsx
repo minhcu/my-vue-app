@@ -8,7 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { IconPlus, IconX } from "@tabler/icons-react"
-import { storyFormSchema } from "../model/sprint"
+import { sprintPriority, storyFormSchema } from "../model/sprint"
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { BackLogStateContext } from "../shared/backlog-context"
 
@@ -24,7 +24,7 @@ export function StoryFormDialog({ onSuccess }: {
         defaultValues: {
             title: "test",
             description: "test",
-            priorityId: "medium",
+            priorityId: sprintPriority[1],
             sprintId: null,
             tags: ['test'],
         },
@@ -90,10 +90,9 @@ export function StoryFormDialog({ onSuccess }: {
                                                 <SelectValue placeholder="Select priority" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="low">Low</SelectItem>
-                                                <SelectItem value="medium">Medium</SelectItem>
-                                                <SelectItem value="high">High</SelectItem>
-                                                <SelectItem value="critical">Critical</SelectItem>
+                                                <SelectItem value={sprintPriority[0]}>Low</SelectItem>
+                                                <SelectItem value={sprintPriority[1]}>Medium</SelectItem>
+                                                <SelectItem value={sprintPriority[2]}>High</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </FormControl>

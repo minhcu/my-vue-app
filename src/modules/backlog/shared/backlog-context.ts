@@ -12,12 +12,14 @@ export const SprintDispatchContext = createContext<ActionDispatch<[action: { typ
 );
 
 export const BackLogStateContext = createContext<{
+    storiesData: Map<string, any[]>;
     sprintsData: Sprint[];
     sprints: Sprint[];
     searchQuery: string;
     priority: string;
     assignee: string;
 }>({
+    storiesData: new Map(),
     sprintsData: [],
     sprints: [],
     searchQuery: "",

@@ -12,12 +12,26 @@ import {
     CardHeader,
 } from "@/components/ui/card"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useCallback, useContext } from "react"
+import $api from "@/shared/api.shared"
+import { BackLogDispatchContext } from "../shared/backlog-context"
 
 export function StoryCollapsible({
+    story,
     children,
 }: {
+    story: any
     children?: React.ReactNode
 }) {
+    const dispatch = useContext(BackLogDispatchContext);
+    
+    const onDelete = useCallback(async (id: string) => {
+        await $api.userStory.deleteStory(id);
+
+        const stories = await $api.userStory.getStories();
+
+        dispatch({ type: "SET_STORIES", payload: stories });
+    }, []);
     return (
         <Card className="hover:shadow-md transition-shadow cursor-pointer group relative border-l-4 border-l-primary-500">
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing">
@@ -30,16 +44,12 @@ export function StoryCollapsible({
                             <div className="flex items-center gap-2 mb-2">
                                 <IconBook className="h-4 w-4 text-primary-600" />
                                 <Badge variant="default">Story</Badge>
-                                <Badge variant="outline">5 pts</Badge>
+                                <Badge variant="outline">{ story.point } point</Badge>
                             </div>
-                            <h3 className="font-semibold text-lg mb-1 line-clamp-2">
-                                As a user, I want to log into the system so that I can access my dashboard
-                            </h3>
-                            <p className="text-muted-foreground text-sm line-clamp-2 mb-2">
-                                Users need a secure way to authenticate and access their personalized dashboard
-                            </p>
+                            <h3 className="font-semibold text-lg mb-1 line-clamp-2">{ story.title } </h3>
+                            <p className="text-muted-foreground text-sm line-clamp-2 mb-2">{ story.description } </p>
                             <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span>2</span>
+                                <span>2 mock data</span>
                                 <span>task</span>
                             </div>
                         </div>
@@ -62,7 +72,7 @@ export function StoryCollapsible({
                                             Edit Story
                                         </DropdownMenuItem>
                                         <DropdownMenuItem className="text-red-500" onClick={() => {
-                                            // onDelete(story.id)
+                                            onDelete(story.id)
                                         }}>
                                             <IconTrash className="mr-2 text-inherit" />
                                             Delete Story

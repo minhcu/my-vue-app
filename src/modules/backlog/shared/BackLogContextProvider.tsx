@@ -4,6 +4,13 @@ import { BackLogDispatchContext, BackLogStateContext } from "./backlog-context";
 
 function filterReducer(state: ContextType<typeof BackLogStateContext>, action: { type: string; payload: any }) {
     switch (action.type) {
+        case "SET_STORIES":
+            const storiesMap = new Map();
+            action.payload.forEach((story: any) => {
+                const stories = storiesMap.get(story.sprintId) || [];
+                storiesMap.set(story.sprintId, [...stories, story]);
+            })
+            return { ...state, storiesData: storiesMap };
         case "SET_SPRINTS":
             const SET_SPRINTS = action.payload.filter((sprint: Sprint) =>
                 sprint.name.toLowerCase().includes(state.searchQuery.toLowerCase())
@@ -25,8 +32,9 @@ function filterReducer(state: ContextType<typeof BackLogStateContext>, action: {
 
 export function BackLogContextProvider({ children }: { children: React.ReactNode }) {
     const [filterState, filterDispatch] = useReducer(filterReducer, {
-        sprints: [],
+        storiesData: new Map(),
         sprintsData: [],
+        sprints: [],
         searchQuery: "",
         priority: "all",
         assignee: "all",
@@ -36,6 +44,7 @@ export function BackLogContextProvider({ children }: { children: React.ReactNode
         Promise.all([$api.userStory.getStories(), $api.sprint.getSprints()])
             .then(([stories, sprints]) => {
                 filterDispatch({ type: 'SET_SPRINTS', payload: sprints });
+                filterDispatch({ type: 'SET_STORIES', payload: stories });
             });
     }, []);
 

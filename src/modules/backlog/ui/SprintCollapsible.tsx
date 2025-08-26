@@ -8,6 +8,9 @@ import { IconBook, IconCalendar, IconChevronDown, IconChevronRight, IconDots, Ic
 import { Badge } from "@/components/ui/badge"
 import type { Sprint } from "@/shared/api.shared"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useContext, useMemo } from "react"
+import { BackLogStateContext } from "../shared/backlog-context"
+import { StoryCollapsible } from "./StoryCollapsible"
 
 export function SprintCollapsible({
     children,
@@ -18,6 +21,11 @@ export function SprintCollapsible({
     sprint: Sprint
     onDelete: (id: string) => void
 }) {
+    const { storiesData } = useContext(BackLogStateContext);
+    const stories = useMemo(() => {
+        return storiesData.get(sprint.id) || [];
+    }, [storiesData, sprint.id]);
+
     return (
         <Collapsible>
             <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/30">
@@ -75,11 +83,11 @@ export function SprintCollapsible({
             </div>
             <CollapsibleContent>
                 <div className="grid gap-4 pl-12 min-h-[100px] p-4 rounded-lg border-2 border-dashed transition-colors border-transparent">
-                    {children || (
-                        <div className="text-muted-foreground text-sm">
-                            No stories in this sprint yet.
-                        </div>
-                    )}
+                    {
+                        stories.map((story) => (
+                            <StoryCollapsible key={story.id} story={story}></StoryCollapsible>
+                        ))
+                    }
                 </div>
             </CollapsibleContent>
         </Collapsible>
