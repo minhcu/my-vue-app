@@ -1,6 +1,22 @@
-import axios, { type AxiosRequestConfig } from 'axios';
+import axios, { type AxiosResponse } from 'axios';
+interface fetchConfig {
+    url: string;
+}
+
+interface postConfig {
+    url: string;
+    data?: any;
+}
+
+interface uploadConfig {
+    url: string;
+    data: FormData;
+}
+
 export class FetchFactory {
     private instance
+    private renewRequest: Promise<AxiosResponse> | null = null;
+
     constructor(baseUrl: string, timeout?: number) {
         this.instance = axios.create({
             baseURL: baseUrl,
@@ -21,38 +37,97 @@ export class FetchFactory {
 
         this.instance.interceptors.response.use(
             (response) => response,
-            (error) => error
+            async (error: AxiosResponse) => {
+                if (error.status === 401) {
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    if (refreshToken && !this.renewRequest) {
+                        try {
+                            this.renewRequest = this.post({
+                                url: '/auth/renew',
+                                data: { token: refreshToken }
+                            })
+                            const response = await this.renewRequest;
+                            this.renewRequest = null;
+
+                            const { accessToken } = response.data;
+                            localStorage.setItem('accessToken', accessToken);
+
+                            return axios.request(error.config);
+
+                        } catch (error) {
+                            console.error('Error refreshing token:', error);
+                            return Promise.reject(error);
+                        }
+                    }
+                }
+                return Promise.reject(error);
+            }
         );
     }
 
-    get(url: string, params?: any) {
-        return this.instance.get(url, { params });
+    private configToAxiosRequest(config: {
+        url: string;
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+        headers?: {
+            [key: string]: string;
+        };
+        data?: postConfig['data'] | uploadConfig['data']
+    }): Promise<AxiosResponse> {
+        return this.instance.request({
+            url: config.url,
+            method: config.method,
+            data: config.data,
+        });
     }
 
-    post(url: string, data?: any, config?: AxiosRequestConfig) {
+    get(config: fetchConfig) {
+        return this.configToAxiosRequest({
+            url: config.url,
+            method: 'GET',
+        });
+    }
+
+    post(config: postConfig) {
         const headers = {
             'Content-Type': 'application/json',
         };
 
-        return this.instance.post(url, data, {
-            ...config,
+        return this.configToAxiosRequest({
+            url: config.url,
+            method: 'POST',
+            data: config.data,
             headers,
         });
     }
 
-    upload(url: string, data: FormData, config?: AxiosRequestConfig) {
-        return this.instance.post(url, data, config);
+    upload(config: uploadConfig) {
+        return this.configToAxiosRequest({
+            url: config.url,
+            method: 'POST',
+            data: config.data,
+        });
     }
 
-    put(url: string, data?: any, config?: AxiosRequestConfig) {
-        return this.instance.put(url, data, config);
+    put(config: postConfig) {
+        return this.configToAxiosRequest({
+            url: config.url,
+            method: 'PUT',
+            data: config.data,
+        });
     }
 
-    delete(url: string, config?: AxiosRequestConfig) {
-        return this.instance.delete(url, config);
+    delete(config: fetchConfig) {
+        return this.configToAxiosRequest({
+            url: config.url,
+            method: 'DELETE',
+        });
     }
 
-    patch(url: string, data?: any, config?: AxiosRequestConfig) {
-        return this.instance.patch(url, data, config);
+    patch(config: postConfig) {
+        return this.configToAxiosRequest({
+            url: config.url,
+            method: 'PATCH',
+            data: config.data,
+        });
     }
 }

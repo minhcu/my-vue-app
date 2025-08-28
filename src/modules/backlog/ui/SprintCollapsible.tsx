@@ -82,13 +82,11 @@ export function SprintCollapsible({
                 </div>
             </div>
             <CollapsibleContent>
-                <div className="grid gap-4 pl-12 min-h-[100px] p-4 rounded-lg border-2 border-dashed transition-colors border-transparent">
-                    {
-                        stories.map((story) => (
-                            <StoryCollapsible key={story.id} story={story}></StoryCollapsible>
-                        ))
-                    }
-                </div>
+                {children || (
+                    <div className="text-muted-foreground text-sm">
+                        No stories in this sprint yet.
+                    </div>
+                )}
             </CollapsibleContent>
         </Collapsible>
     )

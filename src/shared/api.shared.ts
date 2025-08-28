@@ -13,6 +13,18 @@ export interface Sprint {
     startDate: string;
     status: string | null;
     updatedAt: string;
+    stories: Story[];
+}
+
+export interface Story {
+    id: string;
+    title: string;
+    description: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+    point: number;
+    sprintId: string;
 }
 
 export interface SprintFormData {
@@ -55,7 +67,7 @@ const $api = {
         },
     },
     userStory: {
-        getStories: async () => {
+        getStories: async (): Promise<Story[]> => {
             const response = await API_SERVICE.get(API_ENDPOINT.userStory.list);
 
             return response.data

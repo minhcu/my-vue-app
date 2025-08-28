@@ -8,6 +8,7 @@ import {
 import './index.css'
 import App from './App.tsx'
 import { BackLog } from '@/modules/backlog/BackLogPage.tsx';
+import { LoginPage } from '@/modules/login/LoginPage.tsx';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: "/timeline",
         element: <div>timeline</div>,
+      },
+      {
+        path: "/login",
+        element: <LoginPage />,
       }
     ]
   },

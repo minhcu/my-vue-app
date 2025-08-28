@@ -12,14 +12,17 @@ function filterReducer(state: ContextType<typeof BackLogStateContext>, action: {
             })
             return { ...state, storiesData: storiesMap };
         case "SET_SPRINTS":
-            const SET_SPRINTS = action.payload.filter((sprint: Sprint) =>
-                sprint.name.toLowerCase().includes(state.searchQuery.toLowerCase())
-            );
+            const SET_SPRINTS = action.payload.filter((sprint: Sprint) => {
+                sprint.stories = state.storiesData.get(sprint.id) || [];
+
+                return sprint.name.toLowerCase().includes(state.searchQuery.toLowerCase())
+            });
             return { ...state, sprintsData: action.payload, sprints: SET_SPRINTS };
         case "SET_SEARCH_QUERY":
-            const sprints = state.sprintsData.filter(sprint =>
-                sprint.name.toLowerCase().includes(action.payload.toLowerCase())
-            );
+            const sprints = state.sprintsData.filter(sprint => {
+                sprint.stories = state.storiesData.get(sprint.id) || [];
+                return sprint.name.toLowerCase().includes(action.payload.toLowerCase());
+            });
             return { ...state, searchQuery: action.payload, sprints };
         case "SET_PRIORITY":
             return { ...state, priority: action.payload };
@@ -43,8 +46,8 @@ export function BackLogContextProvider({ children }: { children: React.ReactNode
     useEffect(() => {
         Promise.all([$api.userStory.getStories(), $api.sprint.getSprints()])
             .then(([stories, sprints]) => {
-                filterDispatch({ type: 'SET_SPRINTS', payload: sprints });
                 filterDispatch({ type: 'SET_STORIES', payload: stories });
+                filterDispatch({ type: 'SET_SPRINTS', payload: sprints });
             });
     }, []);
 

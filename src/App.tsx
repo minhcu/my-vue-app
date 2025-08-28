@@ -1,10 +1,12 @@
 import { DefaultLayout } from './layouts/default'
+import { BlankLayout } from './layouts/blank'
 import { Outlet } from 'react-router'
+
 function App() {
   return (
-    <DefaultLayout>
-      <Outlet />
-    </DefaultLayout>
+    <>
+      {window.location.pathname === '/login' ? (<BlankLayout><Outlet /></BlankLayout>) : (<DefaultLayout><Outlet /></DefaultLayout>)}
+    </>
   )
 }
 
