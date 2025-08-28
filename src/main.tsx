@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
   createBrowserRouter,
+  redirect,
   RouterProvider,
 } from "react-router";
 
@@ -10,10 +11,20 @@ import App from './App.tsx'
 import { BackLog } from '@/modules/backlog/BackLogPage.tsx';
 import { LoginPage } from '@/modules/login/LoginPage.tsx';
 
+const beforeEnter = () => {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    // Redirect to login page if not authenticated
+    return redirect("/login");
+  }
+  return true; // Allow access
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    loader: beforeEnter,
     children: [
       { index: true, Component: BackLog },
       {
@@ -24,12 +35,12 @@ const router = createBrowserRouter([
         path: "/timeline",
         element: <div>timeline</div>,
       },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      }
-    ]
+    ],
   },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  }
 ])
 
 createRoot(document.getElementById('root')!).render(
