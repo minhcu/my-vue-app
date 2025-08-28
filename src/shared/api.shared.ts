@@ -37,91 +37,91 @@ export interface SprintFormData {
 const $api = {
     app: {
         healthCheck: async (): Promise<string> => {
-            const response = await API_SERVICE.get(API_ENDPOINT.app.healthCheck);
+            const response = await API_SERVICE.get({ url: API_ENDPOINT.app.healthCheck });
 
             return response.data;
         },
         status: async () => {
-            const response = await API_SERVICE.get(API_ENDPOINT.app.status);
+            const response = await API_SERVICE.get({ url: API_ENDPOINT.app.status });
 
             return response.data;
         },
     },
     auth: {
         login: async (data: any) => {
-            const response = await API_SERVICE.post(API_ENDPOINT.auth.login, data);
+            const response = await API_SERVICE.post({ url: API_ENDPOINT.auth.login, data });
 
             return response
         },
         register: async (data: any) => {
-            const response = await API_SERVICE.post(API_ENDPOINT.auth.register, data);
+            const response = await API_SERVICE.post({ url: API_ENDPOINT.auth.register, data });
 
             return response
         },
     },
     user: {
         all: async () => {
-            const response = await API_SERVICE.get(API_ENDPOINT.user.all);
+            const response = await API_SERVICE.get({ url: API_ENDPOINT.user.all });
 
             return response
         },
     },
     userStory: {
         getStories: async (): Promise<Story[]> => {
-            const response = await API_SERVICE.get(API_ENDPOINT.userStory.list);
+            const response = await API_SERVICE.get({ url: API_ENDPOINT.userStory.list });
 
             return response.data
         },
         createStory: async (data: any) => {
-            const response = await API_SERVICE.post(API_ENDPOINT.userStory.create, data);
+            const response = await API_SERVICE.post({ url: API_ENDPOINT.userStory.create, data });
 
             return response
         },
         getStory: async (id: string) => {
             const url = API_ENDPOINT.userStory.get.replace(':id', id);
-            const response = await API_SERVICE.get(url);
+            const response = await API_SERVICE.get({ url });
 
             return response
         },
         updateStory: async (id: string, data: any) => {
             const url = API_ENDPOINT.userStory.update.replace(':id', id);
-            const response = await API_SERVICE.put(url, data);
+            const response = await API_SERVICE.put({ url, data });
 
             return response
         },
         deleteStory: async (id: string) => {
             const url = API_ENDPOINT.userStory.delete.replace(':id', id);
-            const response = await API_SERVICE.delete(url);
+            const response = await API_SERVICE.delete({ url });
 
             return response
         }
     },
     sprint: {
         getSprints: async (): Promise<Sprint[]> => {
-            const response = await API_SERVICE.get(API_ENDPOINT.sprint.list);
+            const response = await API_SERVICE.get({ url: API_ENDPOINT.sprint.list });
 
             return response.data
         },
         createSprint: async (data: SprintFormData) => {
-            const response = await API_SERVICE.post(API_ENDPOINT.sprint.create, data);
+            const response = await API_SERVICE.post({ url: API_ENDPOINT.sprint.create, data });
 
             return response
         },
         getSprint: async (id: string) => {
             const url = API_ENDPOINT.sprint.get.replace(':id', id);
-            const response = await API_SERVICE.get(url);
+            const response = await API_SERVICE.get({ url });
 
             return response
         },
         updateSprint: async (id: string, data: any) => {
             const url = API_ENDPOINT.sprint.update.replace(':id', id);
-            const response = await API_SERVICE.put(url, data);
+            const response = await API_SERVICE.put({ url, data });
 
             return response
         },
         deleteSprint: async (id: string) => {
             const url = API_ENDPOINT.sprint.delete.replace(':id', id);
-            const response = await API_SERVICE.delete(url);
+            const response = await API_SERVICE.delete({ url });
 
             return response
         }
