@@ -15,7 +15,7 @@ interface uploadConfig {
 
 export class FetchFactory {
     private instance
-    private renewRequest: Promise<AxiosResponse> | null = null;
+    private renewRequest: Promise<AxiosResponse<{ accessToken: string}>> | null = null;
 
     constructor(baseUrl: string, timeout?: number) {
         this.instance = axios.create({
