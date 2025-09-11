@@ -15,7 +15,7 @@ const beforeEnter = () => {
   const token = localStorage.getItem('token');
   if (!token) {
     // Redirect to login page if not authenticated
-    return redirect("/login");
+    // return redirect("/login");
   }
   return true; // Allow access
 };

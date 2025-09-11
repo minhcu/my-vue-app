@@ -19,6 +19,7 @@ import { SprintFormDiaLog } from "./SprintFormDialog"
 import type { sprintFormSchema, storyFormSchema, taskFormSchema } from "../model/sprint"
 import { TaskFormDialog } from "./TaskFormDialog"
 import { StoryFormDialog } from "./StoryFormDialog"
+import { StoryFormDefault } from "./StoryFormDefault"
 
 
 export function BackLogHeader() {
@@ -58,7 +59,9 @@ export function BackLogHeader() {
 
                         <TaskFormDialog onSuccess={handleTaskDialog} />
 
-                        <StoryFormDialog onSuccess={handleStoryDialog} />
+                        {/* <StoryFormDialog onSuccess={handleStoryDialog} /> */}
+                        
+                        <StoryFormDefault onSuccess={handleStoryDialog} />
                     </div>
                 </div>
 
