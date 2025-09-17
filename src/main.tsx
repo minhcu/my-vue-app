@@ -28,20 +28,22 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: BackLog },
       {
-        path: "/sprint",
+        path: "sprint",
         element: <div>sprint</div>,
       },
       {
-        path: "/timeline",
+        path: "timeline",
         element: <div>timeline</div>,
       },
+      {
+        path: "login",
+        element: <LoginPage />,
+      }
     ],
   },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  }
-])
+], {
+  basename: "/my-vue-app"
+})
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
