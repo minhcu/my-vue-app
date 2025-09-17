@@ -9,6 +9,7 @@ import { BackLogStateContext } from "../shared/backlog-context"
 import { FormField } from "../shared/FormField"
 import { storyFormStore } from "../shared/story-form-store"
 import { Select, SelectContent, SelectTrigger, SelectValue, SelectItem } from "@/components/ui/select"
+import { CustomFormField } from "../shared/CustomFormField"
 
 export function StoryFormDefault({ onSuccess }: {
     onSuccess: (formData: z.infer<typeof storyFormSchema>) => void;
@@ -60,6 +61,8 @@ export function StoryFormDefault({ onSuccess }: {
                             </SelectContent>
                         </Select>
                     )} />
+
+                    <CustomFormField name="point" label="Story Points" />
                 </form>
                 <DialogFooter>
                     <Button onClick={() => storyFormStore.resetForm()} variant="outline">
