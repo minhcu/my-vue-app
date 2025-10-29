@@ -8,7 +8,7 @@ import LoginPage from './pages/auth/LoginPage';
 
 function App() {
   return (
-    <BrowserRouter basename="/SGroup-Frontend-Expertise-">
+    <BrowserRouter basename="/react-app/">
       <Routes>
         <Route path="/auth" element={<BlankLayout />}>
           <Route path="login" element={<LoginPage />} />

@@ -12,5 +12,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/SGroup-Frontend-Expertise-/'
+  base: '/react-app/'
 })
