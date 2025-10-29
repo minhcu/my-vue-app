@@ -12,5 +12,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: '/react-app/'
+  base: '/my-vue-app/'
 })

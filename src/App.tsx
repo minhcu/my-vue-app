@@ -8,7 +8,7 @@ import LoginPage from './pages/auth/LoginPage';
 
 function App() {
   return (
-    <BrowserRouter basename="/react-app/">
+    <BrowserRouter basename="/my-vue-app/">
       <Routes>
         <Route path="/auth" element={<BlankLayout />}>
           <Route path="login" element={<LoginPage />} />
