@@ -5,14 +5,23 @@ export interface User {
   avatar: string;
 }
 
-export interface Card {
+export interface Workspace {
+  id: string;
+  name: string;
+  description: string;
+  createdAt: Date;
+  members: string[];
+  boardIds: string[];
+}
+
+export interface Board {
   id: string;
   title: string;
   description: string;
-  listId: string;
-  order: number;
+  workspaceId: string;
   createdAt: Date;
-  assignedUsers: string[];
+  members: string[];
+  listIds: string[];
 }
 
 export interface List {
@@ -23,13 +32,14 @@ export interface List {
   cardIds: string[];
 }
 
-export interface Board {
+export interface Card {
   id: string;
   title: string;
   description: string;
+  listId: string;
+  order: number;
   createdAt: Date;
-  members: string[];
-  listIds: string[];
+  assignedUsers: string[];
 }
 
 export interface Comment {

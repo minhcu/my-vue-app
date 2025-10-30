@@ -1,20 +1,29 @@
 import { create } from 'zustand';
-import type { Board, List, Card, User, Comment } from '../lib/types';
+import type { Workspace, Board, List, Card, User, Comment } from '../lib/types';
 
 interface BoardStore {
   // State
+  workspaces: Workspace[];
   boards: Board[];
   lists: Record<string, List>;
   cards: Record<string, Card>;
   users: Record<string, User>;
   comments: Record<string, Comment>;
   currentUser: User | null;
+  currentWorkspace: string | null;
 
   // Actions
   setCurrentUser: (user: User) => void;
+  setCurrentWorkspace: (workspaceId: string) => void;
+  
+  // Workspace actions
+  createWorkspace: (name: string, description?: string) => string;
+  updateWorkspace: (workspaceId: string, updates: Partial<Workspace>) => void;
+  deleteWorkspace: (workspaceId: string) => void;
+  addMemberToWorkspace: (workspaceId: string, userId: string) => void;
   
   // Board actions
-  createBoard: (title: string, description?: string) => string;
+  createBoard: (workspaceId: string, title: string, description?: string) => string;
   updateBoard: (boardId: string, updates: Partial<Board>) => void;
   deleteBoard: (boardId: string) => void;
   addMemberToBoard: (boardId: string, userId: string) => void;
@@ -64,22 +73,52 @@ const generateId = () => Math.random().toString(36).substring(2, 15);
 
 export const useBoardStore = create<BoardStore>((set, get) => ({
   // Initial state
+  workspaces: [
+    {
+      id: 'workspace-1',
+      name: 'Company Workspace',
+      description: 'Main company workspace',
+      createdAt: new Date(),
+      members: ['user-1', 'user-2', 'user-3'],
+      boardIds: ['board-1', 'board-2']
+    },
+    {
+      id: 'workspace-2',
+      name: 'Personal Projects',
+      description: 'Personal project workspace',
+      createdAt: new Date(),
+      members: ['user-1'],
+      boardIds: ['board-3']
+    }
+  ],
+  
   boards: [
     {
       id: 'board-1',
       title: 'Project Alpha',
       description: 'Main project board',
+      workspaceId: 'workspace-1',
       createdAt: new Date(),
       members: ['user-1', 'user-2'],
       listIds: ['list-1', 'list-2', 'list-3']
     },
     {
-      id: 'board-2', 
+      id: 'board-2',
       title: 'Marketing Campaign',
       description: 'Q4 Marketing initiatives',
+      workspaceId: 'workspace-1',
       createdAt: new Date(),
       members: ['user-2', 'user-3'],
       listIds: ['list-4']
+    },
+    {
+      id: 'board-3',
+      title: 'Personal Todo',
+      description: 'Personal tasks and goals',
+      workspaceId: 'workspace-2',
+      createdAt: new Date(),
+      members: ['user-1'],
+      listIds: ['list-5']
     }
   ],
   
@@ -111,6 +150,13 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       boardId: 'board-2',
       order: 0,
       cardIds: ['card-5']
+    },
+    'list-5': {
+      id: 'list-5',
+      title: 'Personal Tasks',
+      boardId: 'board-3',
+      order: 0,
+      cardIds: ['card-6']
     }
   },
   
@@ -159,30 +205,122 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       order: 0,
       createdAt: new Date(),
       assignedUsers: ['user-3']
+    },
+    'card-6': {
+      id: 'card-6',
+      title: 'Learn React 19',
+      description: 'Study new React 19 features',
+      listId: 'list-5',
+      order: 0,
+      createdAt: new Date(),
+      assignedUsers: ['user-1']
     }
   },
   
   users: mockUsers,
   comments: {},
   currentUser: mockUsers['user-1'],
+  currentWorkspace: 'workspace-1',
 
   // Actions
   setCurrentUser: (user) => set({ currentUser: user }),
+  setCurrentWorkspace: (workspaceId) => set({ currentWorkspace: workspaceId }),
+  
+  // Workspace actions
+  createWorkspace: (name, description = '') => {
+    const id = generateId();
+    const newWorkspace: Workspace = {
+      id,
+      name,
+      description,
+      createdAt: new Date(),
+      members: [get().currentUser?.id || 'user-1'],
+      boardIds: []
+    };
+    
+    set((state) => ({
+      workspaces: [...state.workspaces, newWorkspace]
+    }));
+    
+    return id;
+  },
+  
+  updateWorkspace: (workspaceId, updates) => {
+    set((state) => ({
+      workspaces: state.workspaces.map(workspace => 
+        workspace.id === workspaceId ? { ...workspace, ...updates } : workspace
+      )
+    }));
+  },
+  
+  deleteWorkspace: (workspaceId) => {
+    set((state) => {
+      const workspace = state.workspaces.find(w => w.id === workspaceId);
+      if (!workspace) return state;
+      
+      // Delete all boards in this workspace
+      const boardsToDelete = workspace.boardIds;
+      const listsToDelete: string[] = [];
+      const cardsToDelete: string[] = [];
+      
+      boardsToDelete.forEach(boardId => {
+        const board = state.boards.find(b => b.id === boardId);
+        if (board) {
+          listsToDelete.push(...board.listIds);
+          board.listIds.forEach(listId => {
+            const list = state.lists[listId];
+            if (list) {
+              cardsToDelete.push(...list.cardIds);
+            }
+          });
+        }
+      });
+      
+      const newLists = { ...state.lists };
+      const newCards = { ...state.cards };
+      
+      listsToDelete.forEach(listId => delete newLists[listId]);
+      cardsToDelete.forEach(cardId => delete newCards[cardId]);
+      
+      return {
+        workspaces: state.workspaces.filter(workspace => workspace.id !== workspaceId),
+        boards: state.boards.filter(board => board.workspaceId !== workspaceId),
+        lists: newLists,
+        cards: newCards
+      };
+    });
+  },
+  
+  addMemberToWorkspace: (workspaceId, userId) => {
+    set((state) => ({
+      workspaces: state.workspaces.map(workspace =>
+        workspace.id === workspaceId && !workspace.members.includes(userId)
+          ? { ...workspace, members: [...workspace.members, userId] }
+          : workspace
+      )
+    }));
+  },
   
   // Board actions
-  createBoard: (title, description = '') => {
+  createBoard: (workspaceId, title, description = '') => {
     const id = generateId();
     const newBoard: Board = {
       id,
       title,
       description,
+      workspaceId,
       createdAt: new Date(),
       members: [get().currentUser?.id || 'user-1'],
       listIds: []
     };
     
     set((state) => ({
-      boards: [...state.boards, newBoard]
+      boards: [...state.boards, newBoard],
+      workspaces: state.workspaces.map(workspace =>
+        workspace.id === workspaceId
+          ? { ...workspace, boardIds: [...workspace.boardIds, id] }
+          : workspace
+      )
     }));
     
     return id;
@@ -190,7 +328,7 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
   
   updateBoard: (boardId, updates) => {
     set((state) => ({
-      boards: state.boards.map(board => 
+      boards: state.boards.map(board =>
         board.id === boardId ? { ...board, ...updates } : board
       )
     }));
@@ -205,7 +343,7 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       const listsToDelete = board.listIds;
       const cardsToDelete: string[] = [];
       
-      listsToDelete.forEach(listId => {
+      listsToDelete.forEach((listId: string) => {
         const list = state.lists[listId];
         if (list) {
           cardsToDelete.push(...list.cardIds);
@@ -215,13 +353,18 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       const newLists = { ...state.lists };
       const newCards = { ...state.cards };
       
-      listsToDelete.forEach(listId => delete newLists[listId]);
-      cardsToDelete.forEach(cardId => delete newCards[cardId]);
+      listsToDelete.forEach((listId: string) => delete newLists[listId]);
+      cardsToDelete.forEach((cardId: string) => delete newCards[cardId]);
       
       return {
-        boards: state.boards.filter(board => board.id !== boardId),
+        boards: state.boards.filter(b => b.id !== boardId),
         lists: newLists,
-        cards: newCards
+        cards: newCards,
+        workspaces: state.workspaces.map(workspace =>
+          workspace.id === board.workspaceId
+            ? { ...workspace, boardIds: workspace.boardIds.filter(id => id !== boardId) }
+            : workspace
+        )
       };
     });
   },
@@ -229,8 +372,13 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
   addMemberToBoard: (boardId, userId) => {
     set((state) => ({
       boards: state.boards.map(board =>
-        board.id === boardId && !board.members.includes(userId)
-          ? { ...board, members: [...board.members, userId] }
+        board.id === boardId
+          ? {
+              ...board,
+              members: board.members.includes(userId)
+                ? board.members
+                : [...board.members, userId]
+            }
           : board
       )
     }));
@@ -288,7 +436,10 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
         cards: newCards,
         boards: state.boards.map(board =>
           board.id === list.boardId
-            ? { ...board, listIds: board.listIds.filter(id => id !== listId) }
+            ? {
+                ...board,
+                listIds: board.listIds.filter((id: string) => id !== listId)
+              }
             : board
         )
       };
