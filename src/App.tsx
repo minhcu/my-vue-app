@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { AppLayout } from './features/app/ui/AppLayout';
 import { BoardView } from './pages/BoardView';
 import { Profile } from './pages/Profile';
+import { WorkspacePage } from './pages/WorkspacePage';
 import { BlankLayout } from './features/app/ui/BlankLayout';
 import LoginPage from './pages/auth/LoginPage';
 import DashBoardPage from './pages/dashboard/DashBoardPage';
@@ -15,6 +16,7 @@ function App() {
         </Route>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<DashBoardPage />} />
+          <Route path="workspace/:workspaceId" element={<WorkspacePage />} />
           <Route path="board/:boardId" element={<BoardView />} />
           <Route path="profile" element={<Profile />} />
         </Route>

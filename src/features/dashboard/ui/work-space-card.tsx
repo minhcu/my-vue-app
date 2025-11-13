@@ -1,7 +1,8 @@
 import type { Board, Workspace } from "@/shared/lib/types";
-import { Plus, Kanban } from "lucide-react";
-import { Button } from "@/shared/ui/button";
-import { Card, CardContent } from "@/shared/ui/card";
+import { Plus, Kanban } from 'lucide-react';
+import { Link } from 'react-router';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent } from '@/shared/ui/card';
 import { BoardCard } from "./boad-card";
 
 
@@ -24,12 +25,14 @@ export function WorkSpaceCard({
                 {/* Workspace Header */}
                 <div className="flex items-center justify-between">
                     <div className="space-y-1">
-                        <h3 className="text-xl font-semibold flex items-center gap-2">
-                            <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
-                                <Kanban className="w-4 h-4 text-white" />
-                            </div>
-                            {workspace.name}
-                        </h3>
+                        <Link to={`/workspace/${workspace.id}`}>
+                            <h3 className="text-xl font-semibold flex items-center gap-2 hover:text-blue-600 transition-colors">
+                                <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center">
+                                    <Kanban className="w-4 h-4 text-white" />
+                                </div>
+                                {workspace.name}
+                            </h3>
+                        </Link>
                         {workspace.description && (
                             <p className="text-sm text-muted-foreground">
                                 {workspace.description}
