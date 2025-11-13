@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Workspace, Board, List, Card, User, Comment } from '../lib/types';
+import type { Workspace, Board, List, Card, User, Comment, Tag, Todo } from '../lib/types';
 
 interface BoardStore {
   // State
@@ -9,6 +9,8 @@ interface BoardStore {
   cards: Record<string, Card>;
   users: Record<string, User>;
   comments: Record<string, Comment>;
+  tags: Record<string, Tag>;
+  todos: Record<string, Todo>;
   currentUser: User | null;
   currentWorkspace: string | null;
 
@@ -41,6 +43,19 @@ interface BoardStore {
   moveCard: (cardId: string, targetListId: string, newOrder: number) => void;
   assignUserToCard: (cardId: string, userId: string) => void;
   unassignUserFromCard: (cardId: string, userId: string) => void;
+  addTagToCard: (cardId: string, tagId: string) => void;
+  removeTagFromCard: (cardId: string, tagId: string) => void;
+  
+  // Tag actions
+  createTag: (boardId: string, name: string, color: string) => string;
+  updateTag: (tagId: string, updates: Partial<Tag>) => void;
+  deleteTag: (tagId: string) => void;
+  
+  // Todo actions
+  createTodo: (cardId: string, text: string) => string;
+  updateTodo: (todoId: string, updates: Partial<Todo>) => void;
+  deleteTodo: (todoId: string) => void;
+  toggleTodo: (todoId: string) => void;
   
   // Comment actions
   addComment: (cardId: string, content: string) => void;
@@ -168,7 +183,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId: 'list-1',
       order: 0,
       createdAt: new Date(),
-      assignedUsers: ['user-1']
+      assignedUsers: ['user-1'],
+      tagIds: []
     },
     'card-2': {
       id: 'card-2',
@@ -177,7 +193,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId: 'list-1',
       order: 1,
       createdAt: new Date(),
-      assignedUsers: ['user-2']
+      assignedUsers: ['user-2'],
+      tagIds: []
     },
     'card-3': {
       id: 'card-3',
@@ -186,7 +203,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId: 'list-2',
       order: 0,
       createdAt: new Date(),
-      assignedUsers: ['user-1', 'user-2']
+      assignedUsers: ['user-1', 'user-2'],
+      tagIds: []
     },
     'card-4': {
       id: 'card-4',
@@ -195,7 +213,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId: 'list-3',
       order: 0,
       createdAt: new Date(),
-      assignedUsers: ['user-1']
+      assignedUsers: ['user-1'],
+      tagIds: []
     },
     'card-5': {
       id: 'card-5',
@@ -204,7 +223,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId: 'list-4',
       order: 0,
       createdAt: new Date(),
-      assignedUsers: ['user-3']
+      assignedUsers: ['user-3'],
+      tagIds: []
     },
     'card-6': {
       id: 'card-6',
@@ -213,12 +233,15 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId: 'list-5',
       order: 0,
       createdAt: new Date(),
-      assignedUsers: ['user-1']
+      assignedUsers: ['user-1'],
+      tagIds: []
     }
   },
   
   users: mockUsers,
   comments: {},
+  tags: {},
+  todos: {},
   currentUser: mockUsers['user-1'],
   currentWorkspace: 'workspace-1',
 
@@ -468,7 +491,8 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
       listId,
       order,
       createdAt: new Date(),
-      assignedUsers: []
+      assignedUsers: [],
+      tagIds: []
     };
     
     set((state) => ({
@@ -568,6 +592,121 @@ export const useBoardStore = create<BoardStore>((set, get) => ({
         [cardId]: {
           ...state.cards[cardId],
           assignedUsers: state.cards[cardId].assignedUsers.filter(id => id !== userId)
+        }
+      }
+    }));
+  },
+  
+  addTagToCard: (cardId, tagId) => {
+    set((state) => ({
+      cards: {
+        ...state.cards,
+        [cardId]: {
+          ...state.cards[cardId],
+          tagIds: [...(state.cards[cardId].tagIds || []), tagId]
+        }
+      }
+    }));
+  },
+  
+  removeTagFromCard: (cardId, tagId) => {
+    set((state) => ({
+      cards: {
+        ...state.cards,
+        [cardId]: {
+          ...state.cards[cardId],
+          tagIds: state.cards[cardId].tagIds.filter(id => id !== tagId)
+        }
+      }
+    }));
+  },
+  
+  // Tag actions
+  createTag: (boardId, name, color) => {
+    const id = generateId();
+    const newTag: Tag = {
+      id,
+      name,
+      color,
+      boardId
+    };
+    
+    set((state) => ({
+      tags: { ...state.tags, [id]: newTag }
+    }));
+    
+    return id;
+  },
+  
+  updateTag: (tagId, updates) => {
+    set((state) => ({
+      tags: {
+        ...state.tags,
+        [tagId]: { ...state.tags[tagId], ...updates }
+      }
+    }));
+  },
+  
+  deleteTag: (tagId) => {
+    set((state) => {
+      const newTags = { ...state.tags };
+      delete newTags[tagId];
+      
+      // Remove tag from all cards
+      const newCards = { ...state.cards };
+      Object.keys(newCards).forEach(cardId => {
+        newCards[cardId] = {
+          ...newCards[cardId],
+          tagIds: newCards[cardId].tagIds.filter(id => id !== tagId)
+        };
+      });
+      
+      return { tags: newTags, cards: newCards };
+    });
+  },
+  
+  // Todo actions
+  createTodo: (cardId, text) => {
+    const id = generateId();
+    const newTodo: Todo = {
+      id,
+      text,
+      completed: false,
+      cardId,
+      createdAt: new Date()
+    };
+    
+    set((state) => ({
+      todos: { ...state.todos, [id]: newTodo }
+    }));
+    
+    return id;
+  },
+  
+  updateTodo: (todoId, updates) => {
+    set((state) => ({
+      todos: {
+        ...state.todos,
+        [todoId]: { ...state.todos[todoId], ...updates }
+      }
+    }));
+  },
+  
+  deleteTodo: (todoId) => {
+    set((state) => {
+      const newTodos = { ...state.todos };
+      delete newTodos[todoId];
+      return { todos: newTodos };
+    });
+  },
+  
+  toggleTodo: (todoId) => {
+    set((state) => ({
+      todos: {
+        ...state.todos,
+        [todoId]: {
+          ...state.todos[todoId],
+          completed: !state.todos[todoId].completed
         }
       }
     }));
