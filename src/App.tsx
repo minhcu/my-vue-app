@@ -1,11 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
+import { lazy } from 'react';
 import { AppLayout } from './features/app/ui/AppLayout';
-import { BoardView } from './pages/BoardView';
-import { Profile } from './pages/Profile';
-import { WorkspacePage } from './pages/WorkspacePage';
 import { BlankLayout } from './features/app/ui/BlankLayout';
-import LoginPage from './pages/auth/LoginPage';
-import DashBoardPage from './pages/dashboard/DashBoardPage';
+
+// Lazy load all pages
+const BoardView = lazy(() => import('./pages/BoardView').then(module => ({ default: module.BoardView })));
+const Profile = lazy(() => import('./pages/Profile').then(module => ({ default: module.Profile })));
+const WorkspacePage = lazy(() => import('./pages/WorkspacePage').then(module => ({ default: module.WorkspacePage })));
+const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
+const DashBoardPage = lazy(() => import('./pages/dashboard/DashBoardPage'));
 
 function App() {
   return (
