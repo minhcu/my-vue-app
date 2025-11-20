@@ -12,6 +12,7 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { useBoardStore } from '@/shared/stores/useBoardStore';
 import type { Workspace } from '@/shared/lib/types';
+import { useCallback } from 'react';
 
 interface NavWorkspacesProps {
   workspaces: Workspace[];
@@ -22,8 +23,8 @@ export function NavBoards({ workspaces }: NavWorkspacesProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAll, setShowAll] = useState(false);
 
-  const getWorkspaceBoards = (workspaceId: string) => 
-    boards.filter(board => board.workspaceId === workspaceId);
+  const getWorkspaceBoards = useCallback((workspaceId: string) => 
+    boards.filter(board => board.workspaceId === workspaceId), [boards]);
 
   // Filter workspaces based on search query
   const filteredWorkspaces = useMemo(() => {
@@ -40,7 +41,7 @@ export function NavBoards({ workspaces }: NavWorkspacesProps) {
       const bBoardCount = getWorkspaceBoards(b.id).length;
       return bBoardCount - aBoardCount; // Sort by board count descending
     });
-  }, [filteredWorkspaces, boards]);
+  }, [filteredWorkspaces, getWorkspaceBoards]);
 
   // Limit display to prevent overwhelming UI
   const INITIAL_DISPLAY_LIMIT = 8;

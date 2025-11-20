@@ -15,13 +15,14 @@ export function LoginField() {
 
     try {
       const response = await api.post("/auth/login", { email, password });
-      console.log("Login success:", response.data);
+
       const token = response.data.accessToken;
       if (token) {
         localStorage.setItem("accessToken", token);
         alert("Đăng nhập thành công!");
         window.location.href = "/SGroup-Frontend-Expertise-/dashboard";
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.log("Login failed");
       console.error("Login failed:", err.response?.data || err.message);
